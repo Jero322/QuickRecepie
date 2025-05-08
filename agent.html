@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Voice Agent</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+    }
+    body {
+      background-color: #111;
+      font-family: sans-serif;
+      color: #fff;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* back arrow */
+    .back-button {
+      position: absolute;
+      top: 1rem;
+      left: 1rem;
+      color: #fff;
+      font-size: 2rem;
+      text-decoration: none;
+      cursor: pointer;
+      z-index: 20;
+    }
+
+    /* Text button */
+    .text-button {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      padding: 0.5rem 1rem;
+      border: 2px solid #fff;
+      background: transparent;
+      color: #fff;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      z-index: 20;
+    }
+
+    /* center wrapper */
+    #agent-wrapper {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+    }
+
+    /* circular “talking” UI */
+    #agent-ui {
+      width: 250px;
+      height: 250px;
+      border-radius: 50%;
+      overflow: hidden;
+      background: linear-gradient(
+        180deg,
+        #e0f7ff 0%,
+        #90caf9 50%,
+        #1565c0 100%
+      );
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.1s ease-out;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translate(-50%, -50%) translateY(0); }
+      50%      { transform: translate(-50%, -50%) translateY(-15px); }
+    }
+
+    #agent-ui.speaking {
+      animation: bounce 0.4s infinite;
+    }
+
+    /* force the widget to fill the circle */
+    #agent-ui elevenlabs-convai {
+      width: 100% !important;
+      height: 100% !important;
+      display: block;
+    }
+
+    /* hide “Talk to interrupt” bubble */
+    .convai-floating-ui,
+    .convai-interrupt,
+    .convai-interrupt-popup {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+  <!-- Back arrow -->
+  <a href="index.html" class="back-button" aria-label="Go back">←</a>
+
+  <!-- Text button -->
+  <button
+    class="text-button"
+    onclick="location.href='text.html'"
+  >
+    Text
+  </button>
+
+  <div id="agent-wrapper">
+    <div id="agent-ui">
+      <elevenlabs-convai
+        agent-id="cPX0kqL7WIPr581soQFZ"
+        style="width:100%; height:100%;"
+      ></elevenlabs-convai>
+    </div>
+  </div>
+
+  <script src="https://elevenlabs.io/convai-widget/index.js" async type="text/javascript"></script>
+  <script>
+    // hide interrupt UI if it appears
+    const hideInterrupt = () => {
+      document
+        .querySelectorAll('.convai-floating-ui, .convai-interrupt, .convai-interrupt-popup')
+        .forEach(el => el.remove());
+    };
+    window.addEventListener('load', hideInterrupt);
+    new MutationObserver(hideInterrupt).observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+
+    // bounce animation on speech
+    window.addEventListener('DOMContentLoaded', () => {
+      const convaiEl = document.querySelector('elevenlabs-convai');
+      const agentUi = document.getElementById('agent-ui');
+      if (!convaiEl) return;
+      convaiEl.addEventListener('speechstart', () => agentUi.classList.add('speaking'));
+      convaiEl.addEventListener('speechend', ()  => agentUi.classList.remove('speaking'));
+    });
+  </script>
+</body>
+</html>

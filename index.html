@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Quick Recepie</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+    }
+    body {
+      background-color: #000;
+      position: relative;
+      font-family: sans-serif;
+      color: #fff;
+      overflow: hidden;
+    }
+    .get-started {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      padding: 0.5rem 1rem;
+      border: 2px solid #fff;
+      background: transparent;
+      color: #fff;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      z-index: 20;
+    }
+    .title-container {
+      position: absolute;
+      top: 20%;
+      left: 50%;
+      transform: translate(-50%, -20%);
+      text-align: center;
+      width: 80%;
+      max-width: 600px;
+      z-index: 20;
+    }
+    .title-container h1 {
+      margin: 0;
+      font-size: 4rem;
+      font-weight: bold;
+    }
+    .title-container p {
+      margin: 0.5rem 0;
+      font-size: 1.25rem;
+    }
+    .agent-button {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
+    .agent-button .pie-emoji {
+      font-size: 140px;
+      line-height: 1;
+      position: absolute;
+    }
+    .agent-button .agent-text {
+      font-size: 1rem;
+      font-weight: bold;
+      color: #fff;
+      position: relative;
+      z-index: 1;
+      text-align: center;
+    }
+    .highlight {
+      position: absolute;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80%;
+      max-width: 600px;
+      text-align: center;
+      font-size: 1.5rem;
+      font-weight: bold;
+      line-height: 1.4;
+      margin: 0;
+      z-index: 20;
+    }
+  </style>
+</head>
+<body>
+  <button class="get-started" onclick="location.href='subscribe.html'">
+    Get started
+  </button>
+
+  <div class="title-container">
+    <h1>Quick Recepie</h1>
+    <p>Chef assistant pre-view</p>
+  </div>
+
+  <button class="agent-button" onclick="location.href='agent.html'">
+    <span class="pie-emoji">🍪</span>
+    <span class="agent-text">Talk to AI</span>
+  </button>
+
+  <p class="highlight">
+    Turn your kitchen into a gourmet haven with CookingBot—your AI-powered sous-chef that crafts personalized recipes, guides you step-by-step, and adapts to the ingredients you have for mouthwatering meals every time.
+  </p>
+
+  <script>
+    // Generate random pie emojis far from main text areas
+    const PIE_COUNT = 30;
+    for (let i = 0; i < PIE_COUNT; i++) {
+      const pie = document.createElement('div');
+      pie.textContent = '🥧';
+      pie.style.position = 'absolute';
+      let x, y;
+      do {
+        x = Math.random() * 100;
+        y = Math.random() * 100;
+      } while (x > 15 && x < 85 && y > 25 && y < 75);
+      pie.style.left = x + '%';
+      pie.style.top = y + '%';
+      const size = Math.random() * 30 + 20;
+      pie.style.fontSize = size + 'px';
+      pie.style.opacity = '1';
+      pie.style.pointerEvents = 'none';
+      pie.style.transform = 'translate(-50%, -50%)';
+      pie.style.zIndex = '5';
+      document.body.appendChild(pie);
+    }
+  </script>
+</body>
+</html>

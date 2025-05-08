@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Text Chat</title>
+  <style>
+    html, body {
+      margin: 0; padding: 0; height: 100%;
+      background-color: #111; color: #fff;
+      font-family: sans-serif; position: relative;
+      overflow: hidden;
+    }
+    .back-button {
+      position: absolute; top: 1rem; left: 1rem;
+      color: #fff; font-size: 2rem; text-decoration: none;
+      cursor: pointer; z-index: 20;
+    }
+    .header {
+      position: absolute; top: 1rem; left: 50%;
+      transform: translateX(-50%);
+      font-size: 1.5rem; font-weight: bold; white-space: nowrap;
+    }
+    #chat-container {
+      position: absolute; top: 4rem; bottom: 4rem;
+      left: 1rem; right: 1rem; overflow-y: auto;
+      display: flex; flex-direction: column; gap: .5rem;
+      padding-bottom: .5rem;
+    }
+    .message {
+      max-width: 70%; padding: .5rem 1rem; border-radius: 8px;
+      line-height: 1.4;
+    }
+    .message.user {
+      align-self: flex-end; background: #fff; color: #000;
+    }
+    .message.assistant {
+      align-self: flex-start; background: #222; color: #fff;
+    }
+    .input-container {
+      position: absolute; bottom: 1rem; left: 1rem; right: 1rem;
+      display: flex; gap: .5rem;
+    }
+    #user-input {
+      flex: 1; padding: .5rem; font-size: 1rem;
+      border: 2px solid #fff; border-radius: 4px;
+      background: transparent; color: #fff;
+    }
+    #send-button {
+      padding: .5rem 1rem; font-size: 1rem; font-weight: bold;
+      color: #fff; background: transparent;
+      border: 2px solid #fff; border-radius: 4px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <a href="agent.html" class="back-button">←</a>
+  <div class="header">Chat with Emicookie</div>
+
+  <div id="chat-container"></div>
+
+  <div class="input-container">
+    <input id="user-input" type="text" placeholder="Type a message…" />
+    <button id="send-button">Send</button>
+  </div>
+
+  <script>
+    const API_KEY = 'AIzaSyCHgoitl6EsBWq3flHIl3AdC2IBjo6MXZM';  // ← replace with your real Gemini API key
+    const MODEL   = 'gemini-1.5-flash';
+
+    const chatContainer = document.getElementById('chat-container');
+    const inputEl       = document.getElementById('user-input');
+    const sendBtn       = document.getElementById('send-button');
+
+    function appendMessage(who, text) {
+      const el = document.createElement('div');
+      el.className = `message ${who}`;
+      el.textContent = text;
+      chatContainer.appendChild(el);
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+
+    async function sendMessage() {
+      const userText = inputEl.value.trim();
+      if (!userText) return;
+      appendMessage('user', userText);
+      inputEl.value = '';
+
+      try {
+        const res = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${API_KEY}`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [
+                {
+                  role: 'user',
+                  parts: [{ text: userText }]
+                }
+              ],
+              generationConfig: {
+                temperature: 0.7,
+                topP: 0.8,
+                topK: 40,
+                candidateCount: 1,
+                maxOutputTokens: 512
+              }
+            })
+          }
+        );
+        const json = await res.json();
+        console.log('generateContent response →', json);
+
+        if (json.error) {
+          appendMessage('assistant', `Error: ${json.error.message}`);
+          return;
+        }
+        // Extract the generated text from the first candidate
+        const candidate = json.candidates?.[0];
+        const reply = candidate?.content?.parts?.[0]?.text
+          ?? 'Sorry, no response.';
+        appendMessage('assistant', reply);
+
+      } catch (err) {
+        appendMessage('assistant', 'Network error: ' + err.message);
+        console.error(err);
+      }
+    }
+
+    sendBtn.addEventListener('click', sendMessage);
+    inputEl.addEventListener('keyup', e => { if (e.key === 'Enter') sendMessage(); });
+  </script>
+</body>
+</html>
